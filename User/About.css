@@ -1,0 +1,65 @@
+
+
+/* Styling for the About Section */
+.about-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 40px 10%;
+    gap: 20px;
+    margin: 40px 0;
+}
+
+/* Text Container */
+.text-container {
+    flex: 1;
+    padding-right: 20px;
+}
+
+/* Image Container */
+.image-container {
+    flex: 1;
+    max-width: 400px;
+    border: 1px solid #ddd;
+    padding: 10px;
+}
+
+.image-container img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    display: block;
+}
+
+/* Headings */
+h2 {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* Paragraph Text */
+p {
+    margin-bottom: 15px;
+    font-size: 1em;
+    color: #555;
+}
+
+/* Reverse Section for 'Our Goal' */
+.about-section.reverse {
+    flex-direction: row-reverse;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .about-section {
+        flex-direction: column;
+        padding: 20px;
+    }
+    
+    .text-container, .image-container {
+        padding: 0;
+        max-width: 100%;
+    }
+}

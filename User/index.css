@@ -1,0 +1,474 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+}
+
+ /* Basic Reset */
+ * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Main Styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f3f4f6;
+}
+
+/* Header Styling */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    background-color: #333;
+    color: #fff;
+}
+
+/* Logo Styling */
+.header .logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #f39c12;
+}
+
+/* Navigation Styling */
+.header .nav-bar {
+    display: flex;
+    gap: 20px;
+}
+
+.header .nav-bar a {
+    text-decoration: none;
+    color: #ddd;
+    font-size: 16px;
+    transition: color 0.3s;
+}
+
+.header .nav-bar a:hover {
+    color: #f39c12;
+}
+
+/* Right-Side Icons */
+.header .header-right {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+
+    /* Animation */
+    animation: slideIn 1s ease-in-out infinite;
+}
+
+.header .header-right input[type="text"] {
+    padding: 5px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+.header .icon {
+    color: #ddd;
+    cursor: pointer;
+    font-size: 20px;
+    transition: color 0.3s;
+}
+
+.header .icon:hover {
+    color: #f39c12;
+}
+
+/* Button Styling */
+.btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    background-color: #f39c12;
+    color: #fff;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.btn:hover {
+    background-color: #e67e22;
+}
+
+/* Slide Section */
+.section-slide {
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Slick Wrapper */
+.wrap-slick1 {
+    width: 100%;
+    height: 100%;
+}
+
+/* Each Slide */
+.item-slick1 {
+    width: 100%;
+    height: 100vh;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    color: #fff;
+}
+
+/* Flex and Centering */
+.container.h-full {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    height: 100%;
+}
+
+.flex-col-l-m {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* Slide Text Styles */
+.ltext-101 {
+    font-size: 1.5em;
+    color: #fff;
+    font-weight: 500;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease-in, transform 0.5s ease-in;
+}
+
+.ltext-201 {
+    font-size: 3em;
+    color: #f39c12;
+    font-weight: bold;
+    margin: 10px 0;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease-in, transform 0.7s ease-in;
+}
+
+/* Button Styles */
+.flex-c-m {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 25px;
+    background-color: #f39c12;
+    color: #fff;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 1em;
+    font-weight: 500;
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 0.8s ease-in, transform 0.8s ease-in;
+}
+
+.flex-c-m:hover {
+    background-color: #e67e22;
+    transform: scale(1);
+    transition: 0.2s;
+}
+
+/* Animation Classes */
+/* Global Styles */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+.slider-container {
+    width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    overflow: hidden;
+    border-radius: px;
+    
+}
+
+.slide {
+    height: 600px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    color: #333;
+    display: flex;
+    align-items: center;
+}
+
+.slide-content {
+    text-align: left;
+    max-width: 700px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.8); /* semi-transparent background */
+    margin-left: 5%; /* Position the text on the left */
+    border-radius : 50px;
+}
+
+.slide-content p {
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: #555;
+}
+
+.slide-content h2 {
+    font-size: 58px;
+    font-weight: bold;
+    margin: 10px 0;
+    color: #222;
+}
+
+.shop-btn {
+    display: inline-block;
+    padding: 12px 30px;
+    background-color: #717fe0;
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 25px;
+    transition: background-color 0.3s;
+    margin-left :100px;
+}
+
+.shop-btn:hover {
+    background-color: #575fd6;
+}
+
+/* Slick Slider Overrides */
+.slick-prev:before,
+.slick-next:before {
+    color: #333;
+    font-size: 24px;
+}
+
+.slick-dots li button:before {
+    color: #555;
+    font-size: 12px;
+}
+
+.slick-dots li.slick-active button:before {
+    color: #717fe0;
+}
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+}
+
+.container {
+    display: flex;
+    justify-content: space-around;
+    margin: 50px;
+}
+
+.card {
+    background-color: #ffffff;
+    
+    padding: 20px;
+    text-align: center;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 300px;
+}
+.women {
+    background-image: url('../photo/banner-01.jpg');
+    background-size: cover;
+    background-position: center;
+   
+}
+
+.men {
+    background-image: url('../photo/banner-01.jpg');
+    background-size: cover;
+    background-position: center;
+    
+}
+
+.accessories {
+    background-image: url('../photo/banner-01.jpg');
+    background-size: cover;
+    background-position: center;
+   
+}
+
+
+
+
+.women:hover {
+   
+    margin-top: 10px;
+}
+
+.men:hover {
+    margin-top: 10px;
+}
+
+.accessories:hover {
+    margin-top: 10px;
+}
+
+h2 {
+    margin: 0;
+}
+
+p {
+    margin: 10px 0;
+}
+
+button {
+    margin-top: 15px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #2196F3;
+    color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #1976D2;
+}
+
+.footer {
+    background-color: #222;
+    color: #ddd;
+    padding: 40px 0;
+}
+
+.footer-container {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.footer-section {
+    flex: 1;
+    padding: 20px;
+    min-width: 200px;
+}
+
+.footer-title {
+    color: #fff;
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+.footer-section ul {
+    list-style: none;
+}
+
+.footer-section ul li {
+    margin: 10px 0;
+}
+
+.footer-section ul li a {
+    color: #ddd;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.footer-section ul li a:hover {
+    color: #bbb;
+}
+
+.footer-section p {
+    line-height: 1.5;
+}
+
+.footer-section form {
+    display: flex;
+    flex-direction: column;
+}
+
+.footer-section input[type="email"] {
+    padding: 10px;
+    margin-bottom: 10px;
+    border: none;
+    border-radius: 4px;
+}
+
+.footer-section button {
+    padding: 10px;
+    background-color: #6c63ff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.footer-section button:hover {
+    background-color: #5751d9;
+}
+
+.social-icons a {
+    color: #ddd;
+    font-size: 18px;
+    margin-right: 10px;
+    transition: color 0.3s;
+}
+
+.social-icons a:hover {
+    color: #bbb;
+}
+
+.footer-bottom {
+    text-align: center;
+    padding-top: 20px;
+    border-top: 1px solid #444;
+}
+
+.payment-icons img {
+    width: 40px;
+    margin: 0 5px;
+}
+
+.footer-bottom p {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #bbb;
+}
+/* Container for user icon and dropdown */
+.user-icon-container {
+    position: relative;
+    display: inline-block;
+}
+
+
+/* Style for username */
+#username {
+    font-size: 14px;
+    display: block;
+}
+
+
+#logout-link{
+    font-size: 14px;
+    display: block;
+    color: #777;
+    text-decoration: none;
+    
+}
+/* Style for logout link */
+.user-dropdown{
+    position: relative;
+    display: inline-block;
+}
