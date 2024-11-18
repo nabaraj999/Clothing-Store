@@ -9,11 +9,52 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Guest';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cart</title>
+     <!-- Load Font Awesome for Icons -->
+     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <!-- Load CSS for Slick Slider -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="product_display.css">
+</head>
+<body>
+    
+<!-- Header Section -->
+<header class="header">
+    <!-- Left Logo Section -->
+    <div class="logo">Fashion Loft</div>
+
+    <!-- Center Navigation Bar -->
+    <nav class="nav-bar">
+        <a href="index.php">Home</a>
+        <a href="product_display.php">Shop</a>
+        <a href="About.php">About Us</a>
+        <a href="contact.php">Contact</a>
+        <a href="help.php">Help</a>
+    </nav>
+
+    <!-- Right-Side Search, Cart, Profile -->
+    <div class="header-right">
+        <input type="text" placeholder="Search">
+        <div class="cart-container">
+            <i class="fas fa-shopping-cart icon" onclick="redirectToCart()"></i>
+            <span class="cart-count" id="cart-count">0</span>
+        </div>
+        <div class="user-icon-container">
+    <i class="fas fa-user icon" id="user-icon"></i>
+    <div class="user-dropdown">
+        <span id="username"><?php echo htmlspecialchars($username); ?></span> <!-- Display the username -->
+        <a href="logout.php" id="logout-link" class="logout-button">Logout</a> <!-- Styled logout button -->
+    </div>
+</div>
+
+    </div>
+</header>
     <style>
-       
+        /* Add your CSS here */
         .cart-container2 {
             padding: 30px;
-            max-width: 700px;
+            max-width: 800px;
             margin: 30px auto;
             background: #fff;
             border-radius: 8px;
@@ -41,6 +82,19 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Guest';
 
         td {
             background-color: #fafafa;
+        }
+
+        .remove-btn {
+            background-color: #FF4D4D;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .remove-btn:hover {
+            background-color: #e63939;
         }
 
         .total-price {
@@ -87,47 +141,8 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Guest';
             color: #333;
         }
     </style>
- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-    <!-- Load CSS for Slick Slider -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-    <link rel="stylesheet" href="index.css">
-    <link rel="stylesheet" href="product_display.css">
 </head>
 <body>
-    
-<!-- Header Section -->
-<header class="header">
-    <!-- Left Logo Section -->
-    <div class="logo">Fashion Loft</div>
-
-    <!-- Center Navigation Bar -->
-    <nav class="nav-bar">
-        <a href="index.php">Home</a>
-        <a href="product_display.php">Shop</a>
-        <a href="About.php">About Us</a>
-        <a href="contact.php">Contact</a>
-        <a href="help.php">Help</a>
-    </nav>
-
-    <!-- Right-Side Search, Cart, Profile -->
-    <div class="header-right">
-        <input type="text" placeholder="Search">
-        <div class="cart-container">
-            <i class="fas fa-shopping-cart icon" onclick="redirectToCart()"></i>
-            <span class="cart-count" id="cart-count">0</span>
-        </div>
-        <div class="user-icon-container">
-    <i class="fas fa-user icon" id="user-icon"></i>
-    <div class="user-dropdown">
-        <span id="username"><?php echo htmlspecialchars($username); ?></span> <!-- Display the username -->
-        <a href="logout.php" id="logout-link" class="logout-button">Logout</a> <!-- Styled logout button -->
-    </div>
-</div>
-
-    </div>
-</header>
-
 
 <div class="cart-container2">
     <h2>Your Cart</h2>
@@ -141,6 +156,7 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Guest';
                 <th>Quantity</th>
                 <th>Price</th>
                 <th>Total Price</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
@@ -157,8 +173,8 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Guest';
         <h3>Payment Information</h3>
         <form id="payment-form">
 
-        <label for="username">Username</label>
-        <input type="text" id="username" value="<?php echo htmlspecialchars($username); ?>" disabled> 
+            <label for="username">Username</label>
+            <input type="text" id="username" value="<?php echo htmlspecialchars($username); ?>" disabled> 
 
             <label for="email">Email Address</label>
             <input type="email" id="email" placeholder="you@example.com" required>
@@ -175,28 +191,6 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Guest';
             <label for="cvv">CVV</label>
             <input type="text" id="cvv" placeholder="123" required>
 
-            <label for="address">Street Address</label>
-            <input type="text" id="address" placeholder="123 Main St" required>
-
-            <label for="city">City</label>
-            <input type="text" id="city" placeholder="New York" required>
-
-            <label for="postal-code">Postal Code</label>
-            <input type="text" id="postal-code" placeholder="10001" required>
-
-          
-
-            <label for="country">Country</label>
-            <select id="country" required>
-                <option value="USA">United States</option>
-                <option value="Canada">Canada</option>
-                <option value="UK">United Kingdom</option>
-                <option value="Germany">Germany</option>
-                <option value="France">France</option>
-                <!-- Add more countries as needed -->
-            </select>
-            <label for="Price">Total Price</label>
-            <input type="Number" id="Price " placeholder="$ 50.00" required>
             <button type="submit">Proceed to Checkout</button>
         </form>
     </div>
@@ -210,44 +204,75 @@ let cart = JSON.parse(localStorage.getItem('cart')) || [];
 const cartItemsContainer = document.getElementById('cart-items').getElementsByTagName('tbody')[0];
 let totalPrice = 0;
 
-cart.forEach(item => {
-    // Create a row for each cart item
-    const row = cartItemsContainer.insertRow();
-    row.innerHTML = `
-        <td>${item.product_name}</td>
-        <td>${item.size}</td>
-        <td>${item.color}</td>
-        <td>${item.quantity}</td>
-        <td>$${item.price}</td>
-        <td>$${item.total_price}</td>
-    `;
-    totalPrice += parseFloat(item.total_price);
+function updateCart() {
+    cartItemsContainer.innerHTML = ''; // Clear existing rows
+    totalPrice = 0; // Reset total price
+
+    cart.forEach((item, index) => {
+        const row = cartItemsContainer.insertRow();
+
+        // Populate row data
+        row.innerHTML = `
+            <td>${item.product_name}</td>
+            <td>${item.size}</td>
+            <td>${item.color}</td>
+            <td>
+                <input type="number" min="1" value="${item.quantity}" data-index="${index}" class="quantity-input">
+            </td>
+            <td>$${item.price}</td>
+            <td>$${(item.quantity * item.price).toFixed(2)}</td>
+            <td>
+                <button class="remove-btn" data-index="${index}">Remove</button>
+            </td>
+        `;
+
+        // Update total price
+        totalPrice += item.quantity * item.price;
+    });
+
+    document.getElementById('total-price').textContent = totalPrice.toFixed(2);
+
+    // Save updated cart to localStorage
+    localStorage.setItem('cart', JSON.stringify(cart));
+}
+
+// Handle quantity change
+cartItemsContainer.addEventListener('input', function (e) {
+    if (e.target.classList.contains('quantity-input')) {
+        const index = e.target.getAttribute('data-index');
+        cart[index].quantity = parseInt(e.target.value) || 1;
+        updateCart();
+    }
 });
 
-// Update total price
-document.getElementById('total-price').textContent = totalPrice.toFixed(2);
+// Handle remove button click
+cartItemsContainer.addEventListener('click', function (e) {
+    if (e.target.classList.contains('remove-btn')) {
+        const index = e.target.getAttribute('data-index');
+        cart.splice(index, 1); // Remove item from cart
+        updateCart();
+    }
+});
 
-// Fill payment form with total price
+// Initial render
+updateCart();
+
+// Handle payment form submission
 document.getElementById('payment-form').addEventListener('submit', function(e) {
     e.preventDefault();
 
     const email = document.getElementById('email').value;
     const cardName = document.getElementById('card-name').value;
     const cardNumber = document.getElementById('card-number').value;
-    const expiryDate = document.getElementById('expiry-date').value;
-    const cvv = document.getElementById('cvv').value;
-    const address = document.getElementById('address').value;
-    const city = document.getElementById('city').value;
-    const postalCode = document.getElementById('postal-code').value;
-    const country = document.getElementById('country').value;
 
-    // Here, you can add actual payment logic or redirect to a confirmation page
+    // Process payment (placeholder logic)
     alert(`Payment of $${totalPrice.toFixed(2)} has been processed successfully for ${email}.`);
 
-    // Clear the cart and redirect to a confirmation page
+    // Clear the cart and redirect
     localStorage.removeItem('cart');
-    window.location.href = 'confirmation.php'; // Redirect to confirmation page
+    window.location.href = 'confirmation.php';
 });
+</script>
 
 </body>
 </html>
