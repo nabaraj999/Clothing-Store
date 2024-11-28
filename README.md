@@ -1,3 +1,5 @@
+![image](https://github.com/user-attachments/assets/d854e88f-260a-4a87-8e40-5b455b77a88b)
+
 Online Clothing Store 🛍️
 Welcome to the Online Clothing Store project! This repository showcases a fully functional e-commerce platform designed for clothing retail. It allows users to browse, search, and purchase a wide range of clothing items, with options for personalized accounts and an intuitive checkout process.
 
