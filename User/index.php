@@ -110,51 +110,50 @@ $conn->close();
     </div>
 
 
-    
-<!-- Filter Buttons -->
-<div class="filter-buttons">
-    <!-- Filter for Men -->
+    <div class="filter-buttons">
     <form action="product_display.php" method="GET" style="display: inline;">
         <input type="hidden" name="gender" value="Men">
-        <button type="submit">Men</button>
+        <button type="submit" class="<?= $gender === 'Men' ? 'active' : '' ?>">Men</button>
     </form>
-
-    <!-- Filter for Women -->
     <form action="product_display.php" method="GET" style="display: inline;">
         <input type="hidden" name="gender" value="Women">
-        <button type="submit">Women</button>
+        <button type="submit" class="<?= $gender === 'Women' ? 'active' : '' ?>">Women</button>
     </form>
-
-    <!-- Filter for Both -->
     <form action="product_display.php" method="GET" style="display: inline;">
         <input type="hidden" name="gender" value="Both">
-        <button type="submit">Both</button>
+        <button type="submit" class="<?= $gender === 'Both' ? 'active' : '' ?>">Both</button>
     </form>
 </div>
 
-<!-- Product Display Section -->
 <div class="product-container">
     <?php if (count($products) > 0): ?>
         <?php foreach ($products as $product): ?>
             <div class="product-card">
-                <div class="product-image" onclick="openModal('<?php echo '../uploads/' . $product['front_photo']; ?>')">
-                    <img src="<?php echo '../uploads/' . $product['front_photo']; ?>" alt="<?php echo $product['product_name']; ?>" class="front-photo">
-                    <img src="<?php echo '../uploads/' . $product['back_photo']; ?>" alt="<?php echo $product['product_name']; ?>" class="back-photo">
+                <div class="product-image">
+                    <img src="<?php echo !empty($product['front_photo']) ? '../uploads/' . $product['front_photo'] : 'placeholder.png'; ?>" alt="<?php echo $product['product_name']; ?>">
                 </div>
-                <h3><?php echo $product['product_name']; ?></h3>
-                <p>$<?php echo number_format($product['price'], 2); ?></p>
+                <h3><?php echo htmlspecialchars($product['product_name']); ?></h3>
+                <p>NPR <?php echo number_format($product['price'], 2); ?></p>
                 <form action="purchase.php" method="POST">
                     <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
                     <button type="submit" class="purchase-button">Purchase</button>
                 </form>
-            </div>
-            
             </div>
         <?php endforeach; ?>
     <?php else: ?>
         <p>No products available for this category.</p>
     <?php endif; ?>
 </div>
+
+<script>
+    // Dynamically highlight the selected button
+    document.querySelectorAll('.filter-buttons button').forEach(button => {
+        button.addEventListener('click', function () {
+            document.querySelectorAll('.filter-buttons button').forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+</script>
 
 <!-- Modal for full-size image -->
 <div id="myModal" class="modal">
