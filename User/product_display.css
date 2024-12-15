@@ -127,3 +127,8 @@ body {
 .close:hover {
     color: #bbb;
 }
+
+.view-details-button{
+    text-decoration: none;
+    text-decoration-skip: none !important;
+}

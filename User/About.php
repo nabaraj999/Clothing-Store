@@ -37,7 +37,9 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Guest';
         <input type="text" placeholder="Search">
         <div class="cart-container">
             <i class="fas fa-shopping-cart icon" onclick="redirectToCart()"></i>
-            <span class="cart-count" id="cart-count">0</span>
+            <span class="cart-count">
+                <?php echo isset($_SESSION['cart_count']) ? $_SESSION['cart_count'] : 0; ?>
+            </span>
         </div>
         <div class="user-icon-container">
     <i class="fas fa-user icon" id="user-icon"></i>
@@ -147,7 +149,53 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Guest';
         </div>
     </footer>
     <script src="https://kit.fontawesome.com/a076d05399.js"></script>
+    function addToCart(button) {
+    // Find the product ID from the closest cart form
+    var productId = button.parentElement.querySelector('.product-id').value;
 
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "add_to_cart.php", true);
+    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+    xhr.onload = function () {
+        try {
+            var response = JSON.parse(xhr.responseText);
+            
+            if (xhr.status === 200 && response.status === 'success') {
+                // Update cart count
+                document.querySelector(".cart-count").textContent = response.cartCount;
+                
+                // Show a temporary "added to cart" message
+                button.textContent = "Added!";
+                button.classList.add("added");
+                setTimeout(() => {
+                    button.textContent = "Add to Cart";
+                    button.classList.remove("added");
+                }, 1500);
+            } else {
+                // Handle error cases
+                alert(response.message || "Error adding product to cart");
+                
+                // If unauthorized, redirect to login
+                if (xhr.status === 401) {
+                    window.location.href = "login.php";
+                }
+            }
+        } catch (e) {
+            alert("Error processing server response");
+        }
+    };
+
+    xhr.onerror = function () {
+        alert("An error occurred while connecting to the server.");
+    };
+
+    xhr.send("id=" + encodeURIComponent(productId));
+}
+
+function redirectToCart() {
+    window.location.href = "cart.php";
+}
     
 </body>
 </html>

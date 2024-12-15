@@ -1,6 +1,32 @@
 <?php
 session_start();
-$username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Guest';
+
+// Redirect to login if not logged in
+if (!isset($_SESSION['username'])) {
+    header("Location: login.php");
+    exit;
+}
+
+// Retrieve cart from session
+$cart = isset($_SESSION['cart']) ? $_SESSION['cart'] : [];
+
+// Calculate total price
+$total = array_sum(array_map(function ($item) {
+    return $item['price'] * $item['quantity'];
+}, $cart));
+
+// Add delivery charge
+$deliveryCharge = 80;
+$totalWithDelivery = $total + $deliveryCharge;
+
+// Handle remove item
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove'])) {
+    $productToRemove = $_POST['remove'];
+    if (isset($cart[$productToRemove])) {
+        unset($cart[$productToRemove]);
+        $_SESSION['cart'] = $cart;
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -8,271 +34,209 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Guest';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cart</title>
-     <!-- Load Font Awesome for Icons -->
-     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-    <!-- Load CSS for Slick Slider -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-    <link rel="stylesheet" href="index.css">
-    <link rel="stylesheet" href="product_display.css">
-</head>
-<body>
-    
-<!-- Header Section -->
-<header class="header">
-    <!-- Left Logo Section -->
-    <div class="logo">Fashion Loft</div>
-
-    <!-- Center Navigation Bar -->
-    <nav class="nav-bar">
-        <a href="index.php">Home</a>
-        <a href="product_display.php">Shop</a>
-        <a href="About.php">About Us</a>
-        <a href="contact.php">Contact</a>
-        <a href="help.php">Help</a>
-    </nav>
-
-    <!-- Right-Side Search, Cart, Profile -->
-    <div class="header-right">
-        <input type="text" placeholder="Search">
-        <div class="cart-container">
-            <i class="fas fa-shopping-cart icon" onclick="redirectToCart()"></i>
-            <span class="cart-count" id="cart-count">0</span>
-        </div>
-        <div class="user-icon-container">
-    <i class="fas fa-user icon" id="user-icon"></i>
-    <div class="user-dropdown">
-        <span id="username"><?php echo htmlspecialchars($username); ?></span> <!-- Display the username -->
-        <a href="logout.php" id="logout-link" class="logout-button">Logout</a> <!-- Styled logout button -->
-    </div>
-</div>
-
-    </div>
-</header>
+    <title>Your Cart</title>
     <style>
-        /* Add your CSS here */
-        .cart-container2 {
-            padding: 30px;
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            font-size: 1.5em;
+        }
+
+        .container {
             max-width: 800px;
-            margin: 30px auto;
-            background: #fff;
+            margin: 20px auto;
+            background: white;
             border-radius: 8px;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
         }
 
         table {
             width: 100%;
-            margin-bottom: 20px;
             border-collapse: collapse;
         }
 
-        th, td {
-            padding: 12px;
+        table th, table td {
+            padding: 15px;
             text-align: left;
-            border: 1px solid #ddd;
-            border-radius: 6px;
+            border-bottom: 1px solid #ddd;
         }
 
-        th {
-            background-color: #6C63FF;
-            color: white;
+        table th {
+            background-color: #f2f2f2;
             font-weight: bold;
+            color: #555;
         }
 
-        td {
-            background-color: #fafafa;
+        table tr:hover {
+            background-color: #f1f1f1;
         }
 
-        .remove-btn {
-            background-color: #FF4D4D;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .remove-btn:hover {
-            background-color: #e63939;
-        }
-
-        .total-price {
-            margin-top: 20px;
-            font-size: 18px;
+        .total {
+            font-size: 1.2em;
             font-weight: bold;
+            padding: 15px;
             text-align: right;
         }
 
-        .payment-form {
-            margin-top: 20px;
+        .actions {
+            text-align: center;
+            padding: 20px;
         }
 
-        .payment-form label {
-            display: block;
-            margin-bottom: 8px;
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 1em;
             font-weight: bold;
+            color: white;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
         }
 
-        .payment-form input, .payment-form select {
+        .btn:hover {
+            background-color: #45a049;
+        }
+
+        .remove-btn {
+            background-color: #e74c3c;
+        }
+
+        .remove-btn:hover {
+            background-color: #c0392b;
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2em;
+            color: #888;
+        }
+
+        .payment-options {
+            padding: 20px;
+            text-align: center;
+        }
+
+        .address-form {
+            display: none;
+            text-align: left;
+            padding: 20px;
+        }
+
+        .address-form input, .address-form textarea, .address-form select {
             width: 100%;
             padding: 10px;
-            margin-bottom: 15px;
-            border-radius: 6px;
+            margin: 10px 0;
             border: 1px solid #ccc;
-        }
-
-        .payment-form button {
-            padding: 12px 20px;
-            background-color: #6C63FF;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        .payment-form button:hover {
-            background-color: #5a54e6;
-        }
-
-        .cart-container h2 {
-            text-align: center;
-            color: #333;
+            border-radius: 5px;
         }
     </style>
+    <script>
+        function showPaymentOption(option) {
+            const addressForm = document.getElementById('address-form');
+            const notAvailableMessage = document.getElementById('not-available-message');
+
+            if (option === 'cash') {
+                addressForm.style.display = 'block';
+                notAvailableMessage.style.display = 'none';
+            } else {
+                addressForm.style.display = 'none';
+                notAvailableMessage.style.display = 'block';
+            }
+        }
+    </script>
 </head>
 <body>
-
-<div class="cart-container2">
-    <h2>Your Cart</h2>
-
-    <table id="cart-items">
-        <thead>
+<header>Your Shopping Cart</header>
+<div class="container">
+    <?php if (count($cart) > 0): ?>
+        <table>
+            <thead>
             <tr>
-                <th>Product Name</th>
-                <th>Size</th>
-                <th>Color</th>
-                <th>Quantity</th>
+                <th>Product</th>
                 <th>Price</th>
-                <th>Total Price</th>
+                <th>Quantity</th>
+                <th>Total</th>
                 <th>Action</th>
             </tr>
-        </thead>
-        <tbody>
-            <!-- Cart items will be dynamically inserted here -->
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+            <?php foreach ($cart as $key => $item): ?>
+                <tr>
+                    <td><?php echo htmlspecialchars($item['name']); ?></td>
+                    <td>NPR <?php echo number_format($item['price'], 2); ?></td>
+                    <td><?php echo $item['quantity']; ?></td>
+                    <td>NPR <?php echo number_format($item['price'] * $item['quantity'], 2); ?></td>
+                    <td>
+                        <form method="POST">
+                            <button class="btn remove-btn" name="remove" value="<?php echo $key; ?>">Remove</button>
+                        </form>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+            </tbody>
+        </table>
+        <div class="total">Total: NPR <?php echo number_format($total, 2); ?></div>
+        <div class="total">Delivery Charge: NPR <?php echo number_format($deliveryCharge, 2); ?></div>
+        <div class="total">Grand Total: NPR <?php echo number_format($totalWithDelivery, 2); ?></div>
+        <div class="payment-options">
+            <h3>Select Payment Method</h3>
+            <button class="btn" onclick="showPaymentOption('cash')">Cash on Delivery</button>
+            <button class="btn" onclick="showPaymentOption('online')">Online Payment</button>
+        </div>
+        <div id="not-available-message" style="text-align: center; display: none; color: red;">Online payment is currently not available.</div>
+        <form id="address-form" class="address-form" method="POST" action="process_order.php">
+            <h3>Delivery Address</h3>
+            <label for="product-name">Product Name:</label>
+            <input type="text" id="product-name" name="product_name" value="<?php echo implode(', ', array_column($cart, 'name')); ?>" readonly>
 
-    <div class="total-price">
-        Total Price: $<span id="total-price">0.00</span>
-    </div>
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" value="<?php echo htmlspecialchars($_SESSION['username']); ?>" readonly>
 
-    <!-- Payment Form -->
-    <div class="payment-form">
-        <h3>Payment Information</h3>
-        <form id="payment-form">
+            <label for="phone">Phone Number:</label>
+            <input type="tel" id="phone" name="phone" required>
 
-            <label for="username">Username</label>
-            <input type="text" id="username" value="<?php echo htmlspecialchars($username); ?>" disabled> 
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($_SESSION['email']); ?>" readonly>
 
-            <label for="email">Email Address</label>
-            <input type="email" id="email" placeholder="you@example.com" required>
+            <label for="district">Select District:</label>
+            <select id="district" name="district" required>
+                <option value="">-- Select District --</option>
+                <option value="Kathmandu">Kathmandu</option>
+                <option value="Lalitpur">Lalitpur</option>
+                <option value="Bhaktapur">Bhaktapur</option>
+                <!-- Add more districts as needed -->
+            </select>
 
-            <label for="card-name">Name on Card</label>
-            <input type="text" id="card-name" placeholder="John Doe" required>
+            <label for="address">Full Address:</label>
+            <textarea id="address" name="address" rows="4" required></textarea>
 
-            <label for="card-number">Card Number</label>
-            <input type="text" id="card-number" placeholder="1234 5678 9876 5432" required>
+            <label for="total">Total Amount:</label>
+            <input type="text" id="total" name="total" value="<?php echo number_format($totalWithDelivery, 2); ?>" readonly>
 
-            <label for="expiry-date">Expiry Date</label>
-            <input type="month" id="expiry-date" required>
+            <label for="quantity">Quantity:</label>
+            <input type="text" id="quantity" name="quantity" value="<?php echo implode(', ', array_column($cart, 'quantity')); ?>" readonly>
 
-            <label for="cvv">CVV</label>
-            <input type="text" id="cvv" placeholder="123" required>
-
-            <button type="submit">Proceed to Checkout</button>
+            <button type="submit" class="btn">Submit Order</button>
         </form>
-    </div>
+    <?php else: ?>
+        <div class="empty-cart">Your cart is empty. Start shopping now!</div>
+    <?php endif; ?>
 </div>
-
-<script>
-// Retrieve cart data from localStorage
-let cart = JSON.parse(localStorage.getItem('cart')) || [];
-
-// Display cart items in the table
-const cartItemsContainer = document.getElementById('cart-items').getElementsByTagName('tbody')[0];
-let totalPrice = 0;
-
-function updateCart() {
-    cartItemsContainer.innerHTML = ''; // Clear existing rows
-    totalPrice = 0; // Reset total price
-
-    cart.forEach((item, index) => {
-        const row = cartItemsContainer.insertRow();
-
-        // Populate row data
-        row.innerHTML = `
-            <td>${item.product_name}</td>
-            <td>${item.size}</td>
-            <td>${item.color}</td>
-            <td>
-                <input type="number" min="1" value="${item.quantity}" data-index="${index}" class="quantity-input">
-            </td>
-            <td>$${item.price}</td>
-            <td>$${(item.quantity * item.price).toFixed(2)}</td>
-            <td>
-                <button class="remove-btn" data-index="${index}">Remove</button>
-            </td>
-        `;
-
-        // Update total price
-        totalPrice += item.quantity * item.price;
-    });
-
-    document.getElementById('total-price').textContent = totalPrice.toFixed(2);
-
-    // Save updated cart to localStorage
-    localStorage.setItem('cart', JSON.stringify(cart));
-}
-
-// Handle quantity change
-cartItemsContainer.addEventListener('input', function (e) {
-    if (e.target.classList.contains('quantity-input')) {
-        const index = e.target.getAttribute('data-index');
-        cart[index].quantity = parseInt(e.target.value) || 1;
-        updateCart();
-    }
-});
-
-// Handle remove button click
-cartItemsContainer.addEventListener('click', function (e) {
-    if (e.target.classList.contains('remove-btn')) {
-        const index = e.target.getAttribute('data-index');
-        cart.splice(index, 1); // Remove item from cart
-        updateCart();
-    }
-});
-
-// Initial render
-updateCart();
-
-// Handle payment form submission
-document.getElementById('payment-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-
-    const email = document.getElementById('email').value;
-    const cardName = document.getElementById('card-name').value;
-    const cardNumber = document.getElementById('card-number').value;
-
-    // Process payment (placeholder logic)
-    alert(`Payment of $${totalPrice.toFixed(2)} has been processed successfully for ${email}.`);
-
-    // Clear the cart and redirect
-    localStorage.removeItem('cart');
-    window.location.href = 'confirmation.php';
-});
-</script>
-
 </body>
 </html>

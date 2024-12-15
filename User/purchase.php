@@ -1,8 +1,10 @@
 <?php
-$servername = "localhost"; // Change if necessary
-$username = "root"; // Change this
-$password = ""; // Change this
-$dbname = "cs"; // Change this
+session_start();
+
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "cs";
 
 // Create connection
 $conn = new mysqli($servername, $username, $password, $dbname, 3307);
@@ -12,32 +14,30 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Retrieve product_id from POST request
-$product_id = isset($_POST['product_id']) ? $_POST['product_id'] : 0;
+// Validate product ID
+$product_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+if ($product_id <= 0) {
+    header("Location: product_display.php");
+    exit;
+}
 
-// Fetch the product details from the database
-if ($product_id > 0) {
-    $sql = "SELECT * FROM products WHERE id = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("i", $product_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
+// Fetch product details
+$sql = "SELECT * FROM products WHERE id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $product_id);
+$stmt->execute();
+$result = $stmt->get_result();
+$product = $result->fetch_assoc();
 
-    // Fetch the product data
-    $product = $result->fetch_assoc();
-
-    if (!$product) {
-        echo "<p>Product not found.</p>";
-    }
-} else {
-    echo "<p>Invalid product ID.</p>";
+if (!$product) {
+    header("Location: product_display.php");
+    exit;
 }
 
 // Close connection
 $stmt->close();
 $conn->close();
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -45,14 +45,67 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Purchase Product</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-    <!-- Load CSS for Slick Slider -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link rel="stylesheet" href="purchase.css">
     <link rel="stylesheet" href="index.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+        
+        
+        .product-details-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 20px;
+            background-color: #fff;
+            margin: 20px auto;
+            border-radius: 10px;
+            max-width: 800px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .product-image img {
+            width: 100%;
+            max-width: 300px;
+            border-radius: 10px;
+        }
+        .product-info {
+            flex: 1;
+            margin-left: 20px;
+        }
+        .product-info h1 {
+            font-size: 28px;
+            color: #333;
+        }
+        .price {
+            font-size: 24px;
+            color: #e67e22;
+            margin: 10px 0;
+        }
+        .description {
+            font-size: 16px;
+            color: #555;
+        }
+        .add-to-cart-button {
+            background-color: #27ae60;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .add-to-cart-button:hover {
+            background-color: #2ecc71;
+        }
+        .add-to-cart-button.added {
+            background-color: #3498db;
+        }
+    </style>
 </head>
 <body>
-    
-<!-- Header Section -->
 <header class="header">
     <!-- Left Logo Section -->
     <div class="logo">Fashion Loft</div>
@@ -71,15 +124,13 @@ $conn->close();
         <input type="text" placeholder="Search">
         <div class="cart-container">
             <i class="fas fa-shopping-cart icon" onclick="redirectToCart()"></i>
-            <span class="cart-count" id="cart-count">0</span>
+            <span class="cart-count">
+                <?php echo isset($_SESSION['cart_count']) ? $_SESSION['cart_count'] : 0; ?>
+            </span>
         </div>
         <div class="user-icon-container">
     <i class="fas fa-user icon" id="user-icon"></i>
     <div class="user-dropdown">
-    <?php
-session_start();
-$username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Guest';
-?>
         <span id="username"><?php echo htmlspecialchars($username); ?></span> <!-- Display the username -->
         <a href="logout.php" id="logout-link" class="logout-button">Logout</a> <!-- Styled logout button -->
     </div>
@@ -87,95 +138,87 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Guest';
 
     </div>
 </header>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
-            margin: 0;
-            padding: 0;
-        }
-
-        .product-details-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            padding: 20px;
-        }
-
-        .product-details-card {
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            width: 400px;
-            text-align: center;
-        }
-
-        .product-details-card img {
-            width: 200px;
-            height: 250px;
-            max-height: 250px;
-            object-fit: cover;
-            border-radius: 5px;
-        }
-
-        .product-details-card h2 {
-            font-size: 1.5em;
-            margin-top: 15px;
-            color: #333;
-        }
-
-        .product-details-card p {
-            font-size: 1.1em;
-            color: #555;
-            margin: 10px 0;
-        }
-
-        .price {
-            font-size: 1.4em;
-            color: #4CAF50;
-            font-weight: bold;
-        }
-
-        .purchase-button {
-            padding: 10px 20px;
-            background-color: #4CAF50;
-            color: white;
-            font-size: 1.2em;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            text-decoration: none;
-            margin-top: 20px;
-        }
-
-        .purchase-button:hover {
-            background-color: #3e8e41;
-        }
-
-    </style>
-</head>
-<body>
 
 <div class="product-details-container">
-    <?php if (isset($product)): ?>
-        <div class="product-details-card">
-            <img src="<?php echo '../uploads/' . $product['front_photo']; ?>" alt="<?php echo htmlspecialchars($product['product_name']); ?>">
-            <h2><?php echo htmlspecialchars($product['product_name']); ?></h2>
-            <!-- Check if the description exists -->
-            <p><?php echo isset($product['description']) && !empty($product['description']) ? nl2br(htmlspecialchars($product['description'])) : 'No description available for this product.'; ?></p>
-            <p class="price">NPR <?php echo number_format($product['price'], 2); ?></p>
-            <form action="checkout_handler.php" method="POST">
-    <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
-    <button type="submit" class="purchase-button">Proceed to Checkout</button>
-</form>
-
+    <div class="product-image">
+        <img src="<?php echo !empty($product['front_photo']) ? '../uploads/' . $product['front_photo'] : 'placeholder.png'; ?>" alt="<?php echo htmlspecialchars($product['product_name']); ?>">
+    </div>
+    <div class="product-info">
+        <h1><?php echo htmlspecialchars($product['product_name']); ?></h1>
+        <p class="price">NPR <?php echo number_format($product['price'], 2); ?></p>
+        <p>Discount: <?php echo htmlspecialchars($product['discount']);?>%</p>
+        <p>Color: <?php echo htmlspecialchars($product['color']);?></p>
+        <p>Size: <?php echo htmlspecialchars($product['size']);?></p>
+        <p>Stock: <?php echo htmlspecialchars($product['stock']);?></p>
+        <p>For: <?php echo htmlspecialchars($product['gender']);?></p>
+        
+        <p class="description"> <?php echo htmlspecialchars($product['description']); ?></p>
+        <div class="cart-form">
+            <input type="hidden" class="product-id" value="<?php echo $product['id']; ?>">
+            <button onclick="addToCart(this)" class="add-to-cart-button">Add to Cart</button>
         </div>
-    <?php else: ?>
-        <p>Product details could not be loaded.</p>
-    <?php endif; ?>
+    </div>
 </div>
 
+<script>
+function addToCart(button) {
+    // Get the product ID from the hidden input
+    const productId = button.parentElement.querySelector('.product-id').value;
+
+    // Initialize the XMLHttpRequest object
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", "add_to_cart.php", true);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+    // Handle the server response
+    xhr.onload = function () {
+        try {
+            // Parse the JSON response
+            const response = JSON.parse(xhr.responseText);
+
+            if (xhr.status === 200 && response.status === "success") {
+                // Update cart count on the header
+                document.querySelector(".cart-count").textContent = response.cartCount;
+
+                // Provide user feedback
+                button.textContent = "Added!";
+                button.classList.add("added");
+
+                // Reset button text and style after 1.5 seconds
+                setTimeout(() => {
+                    button.textContent = "Add to Cart";
+                    button.classList.remove("added");
+                }, 1500);
+            } else {
+                // Handle specific errors (e.g., unauthenticated user)
+                if (xhr.status === 401) {
+                    window.location.href = "login.php"; // Redirect to login if unauthorized
+                } else {
+                    // Display error message from server
+                    alert(response.message || "An error occurred while adding to the cart.");
+                }
+            }
+        } catch (error) {
+            // Handle invalid or unexpected server responses
+            console.error("Error parsing server response:", xhr.responseText);
+            alert("An unexpected error occurred. Please try again later.");
+        }
+    };
+
+    // Handle network errors
+    xhr.onerror = function () {
+        alert("Unable to connect to the server. Please check your internet connection and try again.");
+    };
+
+    // Send the product ID to the server
+    xhr.send("id=" + encodeURIComponent(productId));
+}
+
+function redirectToCart() {
+    // Navigate to the cart page
+    window.location.href = "cart.php";
+}
+
+</script>
 </body>
 </html>

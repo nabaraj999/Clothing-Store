@@ -1,115 +1,73 @@
 <?php
-// Connect to the database
-include 'db_connect.php';
-
-// Handle form submission to add a new user
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['add_user'])) {
-    $username = $_POST['username'];
-    $email = $_POST['email'];
-    $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
-    $role = $_POST['role'];
-
-    $sql = "INSERT INTO users (username, email, password, role) VALUES ('$username', '$email', '$password', '$role')";
-    if (mysqli_query($conn, $sql)) {
-        echo "<p class='success-message'>User added successfully.</p>";
-    } else {
-        echo "<p class='error-message'>Error adding user: " . mysqli_error($conn) . "</p>";
-    }
-}
-
-// Fetch users from the database
-$result = mysqli_query($conn, "SELECT * FROM users");
+include ('db_connect.php');
+// Fetch all orders
+$sql = "SELECT * FROM orders";
+$result = $conn->query($sql);
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>User Management</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Manage Orders</title>
     <style>
-        
-        .container {
-            width: 800px;
-            background-color: #fff;
-            padding: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-            margin-left :350px;
-            margin-top: 10px;
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f9fa;
         }
-        h2, h3 {
-            color: #333;
-        }
-        form {
-            margin-bottom: 20px;
-        }
-        input[type="text"], input[type="email"], input[type="password"], select {
-            width: calc(100% - 22px);
-            padding: 10px;
-            margin: 8px 0;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        .table-container {
-            overflow-x: auto;
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+            color: #343a40;
         }
         table {
-            width: 100%;
+            width: 80%;
+            margin: 20px auto;
             border-collapse: collapse;
-            margin-top: 20px;
-        }
-        table, th, td {
-            border: 1px solid #ddd;
+            background-color: #ffffff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
         th, td {
             padding: 12px;
-            text-align: left;
+            text-align: center;
+            border: 1px solid #dee2e6;
         }
         th {
-            background-color: #f2f2f2;
-            color: #333;
+            background-color: #343a40;
+            color: #ffffff;
         }
         tr:nth-child(even) {
-            background-color: #f9f9f9;
+            background-color: #f2f2f2;
         }
-        .action-links a {
-            color: #007BFF;
-            text-decoration: none;
-            margin-right: 10px;
-        }
-        .action-links a:hover {
-            text-decoration: underline;
-        }
-        .success-message, .error-message {
-            font-size: 14px;
-            color: #fff;
-            padding: 10px;
+        button {
+            padding: 8px 12px;
+            margin: 5px;
+            border: none;
+            cursor: pointer;
             border-radius: 4px;
-            margin-bottom: 20px;
+            font-size: 14px;
         }
-        .success-message {
-            background-color: #4CAF50;
+        button[name="action"][value="approve"] {
+            background-color: #28a745;
+            color: #ffffff;
         }
-        .error-message {
-            background-color: #f44336;
+        button[name="action"][value="reject"] {
+            background-color: #dc3545;
+            color: #ffffff;
+        }
+       
+        form {
+            display: inline;
+        }
+        .container {
+            margin-bottom: 50px;
         }
     </style>
-</head>
-<body>
-<head>
-    <meta charset="UTF-8">
+
+<meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -226,13 +184,13 @@ $result = mysqli_query($conn, "SELECT * FROM users");
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="manage_users.php">
+                            <a class="nav-link" href="#users">
                                 <i class="fas fa-users"></i>
                                 <span>Users</span>
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="manage_products.php">
+                            <a class="nav-link" href="#products">
                                 <i class="fas fa-box"></i>
                                 <span>Products</span>
                             </a>
@@ -261,62 +219,51 @@ $result = mysqli_query($conn, "SELECT * FROM users");
                         <h2 class="navbar-brand">Dashboard Overview</h2>
                         <div class="d-flex align-items-center">
                             <div class="me-3">
-                                <span class="text-muted">Welcome,Admin</span>
-                                <div class="logout-container">
-    <a href="logout.php" class="btn btn-sm logout-btn">
-        <i class="fas fa-sign-out-alt me-2"></i>Logout
-    </a>
-</div>
-
+                                <span class="text-muted">Welcome, Admin</span>
+                            </div>
+                            <a href="logout.php" class="btn btn-sm logout-btn">
+                                <i class="fas fa-sign-out-alt me-2"></i>Logout
+                            </a>
+                        </div>
                     </div>
                 </nav>
-    
 
+</head>
+<body>
 <div class="container">
-    <h2>User Management</h2>
-
-    <!-- Add User Form -->
-    <form action="" method="POST">
-        <h3>Add New User</h3>
-        <input type="text" name="username" placeholder="Username" required>
-        <input type="email" name="email" placeholder="Email" required>
-        <input type="password" name="password" placeholder="Password" required>
-        
-        <!-- Role Selection -->
-        <label for="role">Role:</label>
-        <select name="role" id="role" required>
-            <option value="User">User</option>
-            <option value="Admin">Admin</option>
-        </select>
-        
-        <button type="submit" name="add_user">Add User</button>
-    </form>
-
-    <!-- Display Users -->
-    <h3>Existing Users</h3>
-    <div class="table-container">
-        <table>
+    <h1>Manage Orders</h1>
+    <table>
+        <tr>
+            <th>Order ID</th>
+            <th>Product Name</th>
+            <th>Username</th>
+            <th>Quantity</th>
+            <th>Total Amount</th>
+            <th>Status</th>
+            <th>Action</th>
+        </tr>
+        <?php while ($order = $result->fetch_assoc()): ?>
             <tr>
-                <th>ID</th>
-                <th>Username</th>
-                <th>Email</th>
-                <th>Role</th>
-                <th>Action</th>
+                <td><?php echo $order['id']; ?></td>
+                <td><?php echo $order['product_name']; ?></td>
+                <td><?php echo $order['username']; ?></td>
+                <td><?php echo $order['quantity']; ?></td>
+                <td><?php echo $order['total_amount']; ?></td>
+                <td><?php echo $order['status']; ?></td>
+                <td>
+                    <form method="POST" action="process_order_action.php">
+                        <input type="hidden" name="order_id" value="<?php echo $order['id']; ?>">
+                        <input type="hidden" name="product_name" value="<?php echo $order['product_name']; ?>">
+                        <input type="hidden" name="quantity" value="<?php echo $order['quantity']; ?>">
+                        <button type="submit" name="action" value="Accpet" <?php echo ($order['status'] === 'Accepted' || $order['status'] === 'Rejected') ? 'disabled' : ''; ?>>Accpet</button>
+                        <button type="submit" name="action" value="reject" <?php echo ($order['status'] === 'Accepted' || $order['status'] === 'Rejected') ? 'disabled' : ''; ?>>Reject</button>
+                    </form>
+                </td>
             </tr>
-            <?php while ($row = mysqli_fetch_assoc($result)) : ?>
-                <tr>
-                    <td><?php echo $row['id']; ?></td>
-                    <td><?php echo $row['username']; ?></td>
-                    <td><?php echo $row['email']; ?></td>
-                    <td><?php echo $row['role']; ?></td>
-                    <td class="action-links">
-                        <a href="edit_user.php?id=<?php echo $row['id']; ?>">Edit</a>
-                        <a href="delete_user.php?id=<?php echo $row['id']; ?>" onclick="return confirm('Are you sure you want to delete this user?');">Delete</a>
-                    </td>
-                </tr>
-            <?php endwhile; ?>
-        </table>
-    </div>
+        <?php endwhile; ?>
+    </table>
 </div>
 </body>
 </html>
+
+<?php $conn->close(); ?>

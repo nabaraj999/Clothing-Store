@@ -37,9 +37,10 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Guest';
         <input type="text" placeholder="Search">
         <div class="cart-container">
             <i class="fas fa-shopping-cart icon" onclick="redirectToCart()"></i>
-            <span class="cart-count" id="cart-count">0</span>
+            <span class="cart-count">
+                <?php echo isset($_SESSION['cart_count']) ? $_SESSION['cart_count'] : 0; ?>
+            </span>
         </div>
-        <div class="user-icon-container">
     <i class="fas fa-user icon" id="user-icon"></i>
     <div class="user-dropdown">
         <span id="username"><?php echo htmlspecialchars($username); ?></span> <!-- Display the username -->

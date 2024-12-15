@@ -1,5 +1,6 @@
-
 <?php
+session_start();
+
 $servername = "localhost";
 $username = "root";
 $password = "";
@@ -28,7 +29,6 @@ $products = $result->fetch_all(MYSQLI_ASSOC);
 $stmt->close();
 $conn->close();
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -36,17 +36,14 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product Display</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-    <!-- Load CSS for Slick Slider -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <link rel="stylesheet" href="index.css">
     <link rel="stylesheet" href="product_display.css">
+</head>
+<body>
 <!-- Header Section -->
 <header class="header">
-    <!-- Left Logo Section -->
     <div class="logo">Fashion Loft</div>
-
-    <!-- Center Navigation Bar -->
     <nav class="nav-bar">
         <a href="index.php">Home</a>
         <a href="product_display.php">Shop</a>
@@ -54,130 +51,26 @@ $conn->close();
         <a href="contact.php">Contact</a>
         <a href="help.php">Help</a>
     </nav>
-
-    <!-- Right-Side Search, Cart, Profile -->
     <div class="header-right">
         <input type="text" placeholder="Search">
         <div class="cart-container">
             <i class="fas fa-shopping-cart icon" onclick="redirectToCart()"></i>
-            <span class="cart-count" id="cart-count">0</span>
+            <span class="cart-count">
+                <?php echo isset($_SESSION['cart_count']) ? $_SESSION['cart_count'] : 0; ?>
+            </span>
         </div>
         <div class="user-icon-container">
-    <i class="fas fa-user icon" id="user-icon"></i>
-    <div class="user-dropdown">
-    <?php
-session_start();
-$username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Guest';
-?>
-        <span id="username"><?php echo htmlspecialchars($username); ?></span> <!-- Display the username -->
-        <a href="logout.php" id="logout-link" class="logout-button">Logout</a> <!-- Styled logout button -->
-    </div>
-</div>
-
+            <i class="fas fa-user icon" id="user-icon"></i>
+            <div class="user-dropdown">
+                <?php
+                $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Guest';
+                ?>
+                <span id="username"><?php echo htmlspecialchars($username); ?></span>
+                <a href="logout.php" id="logout-link" class="logout-button">Logout</a>
+            </div>
+        </div>
     </div>
 </header>
-
-    <style>
-       body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    background-color: #f9f9f9;
-}
-
-.product-container {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr); /* Ensures there are 5 cards in each row */
-    gap: 10px; /* Sets a 10px gap between cards */
-    padding: 10px;
-    max-width: 1200px;
-    margin: auto;
-}
-
-.product-card {
-    background-color: #ffffff;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    padding: 10px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    overflow: hidden;
-    margin: 0; /* No margin to reduce extra space */
-}
-
-.product-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-}
-
-.product-image {
-    width: 100%; /* Ensures the image fills the width */
-    height: 180px;
-    overflow: hidden;
-    border-radius: 8px;
-}
-
-.product-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.product-card h3 {
-    font-size: 1em;
-    margin: 10px 0 5px;
-    color: #333;
-}
-
-.product-card p {
-    font-size: 0.9em;
-    color: #666;
-    margin: 5px 0;
-}
-
-.purchase-button {
-    padding: 8px 12px;
-    background-color: #6C63FF;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 0.9em;
-    transition: background 0.3s ease;
-}
-
-.purchase-button:hover {
-    background-color: #5848cc;
-}
-
-/* Additional styles for filter buttons */
-.filter-buttons form {
-    display: inline-block;
-    margin: 0;
-}
-
-.filter-buttons button {
-    padding: 8px 16px;
-    background-color: #6C63FF;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1em;
-    margin-right: 10px; /* Small margin between filter buttons */
-    transition: background 0.3s ease;
-}
-
-.filter-buttons button:hover {
-    background-color: #5848cc;
-}
-
-.filter-buttons .active {
-    background-color: #4e42c1;
-}
-
-
-    </style>
 
 <div class="filter-buttons">
     <form action="product_display.php" method="GET" style="display: inline;">
@@ -203,10 +96,12 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Guest';
                 </div>
                 <h3><?php echo htmlspecialchars($product['product_name']); ?></h3>
                 <p>NPR <?php echo number_format($product['price'], 2); ?></p>
-                <form action="purchase.php" method="POST">
-                    <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
-                    <button type="submit" class="purchase-button">Purchase</button>
-                </form>
+                <div class="cart-form">
+                    <input type="hidden" class="product-id" value="<?php echo $product['id']; ?>">
+                    <button onclick="addToCart(this)" class="purchase-button">Add to Cart</button>
+                    <a href="purchase.php?id=<?php echo $product['id'];?>" class="view-details-button">View Details</a>
+
+                </div>
             </div>
         <?php endforeach; ?>
     <?php else: ?>
@@ -215,13 +110,53 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : 'Guest';
 </div>
 
 <script>
-    // Dynamically highlight the selected button
-    document.querySelectorAll('.filter-buttons button').forEach(button => {
-        button.addEventListener('click', function () {
-            document.querySelectorAll('.filter-buttons button').forEach(btn => btn.classList.remove('active'));
-            this.classList.add('active');
-        });
-    });
+function addToCart(button) {
+    // Find the product ID from the closest cart form
+    var productId = button.parentElement.querySelector('.product-id').value;
+
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "add_to_cart.php", true);
+    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+    xhr.onload = function () {
+        try {
+            var response = JSON.parse(xhr.responseText);
+            
+            if (xhr.status === 200 && response.status === 'success') {
+                // Update cart count
+                document.querySelector(".cart-count").textContent = response.cartCount;
+                
+                // Show a temporary "added to cart" message
+                button.textContent = "Added!";
+                button.classList.add("added");
+                setTimeout(() => {
+                    button.textContent = "Add to Cart";
+                    button.classList.remove("added");
+                }, 1500);
+            } else {
+                // Handle error cases
+                alert(response.message || "Error adding product to cart");
+                
+                // If unauthorized, redirect to login
+                if (xhr.status === 401) {
+                    window.location.href = "login.php";
+                }
+            }
+        } catch (e) {
+            alert("Error processing server response");
+        }
+    };
+
+    xhr.onerror = function () {
+        alert("An error occurred while connecting to the server.");
+    };
+
+    xhr.send("id=" + encodeURIComponent(productId));
+}
+
+function redirectToCart() {
+    window.location.href = "cart.php";
+}
 </script>
 </body>
 </html>
