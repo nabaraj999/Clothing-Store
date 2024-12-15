@@ -258,11 +258,12 @@
                                 <?php foreach ($stats['recent_orders'] as $order): ?>
                                     <tr>
                                         <td><?= htmlspecialchars($order['id']) ?></td>
-                                        <td>$<?= number_format($order['total_amount'], 2) ?></td>
+                                        <td>NPR <?= number_format($order['total_amount'], 2) ?></td>
                                         <td>
-                                            <button class="btn btn-sm btn-outline-primary">
-                                                <i class="fas fa-eye"></i> View
-                                            </button>
+                                            <button class="btn btn-sm btn-outline-primary" onclick="window.location.href='admin_orders.php'">
+                                                    <i class="fas fa-eye"></i> View
+                                                          </button>
+
                                         </td>
                                     </tr>
                                 <?php endforeach; ?>
@@ -276,12 +277,13 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Logout functionality (you would replace this with your actual logout logic)
+     <script>
         document.querySelector('.logout-btn').addEventListener('click', function(e) {
-            e.preventDefault();
-            // Add your logout logic here
-            alert('Logout functionality to be implemented');
-        });
+        e.preventDefault(); // Prevent default behavior of the link
+        window.location.href = 'logout.php'; // Redirect to logout.php
+    });
+</script>
+
     </script>
 </body>
 </html>

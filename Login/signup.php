@@ -168,8 +168,7 @@ $conn->close();
 </head>
 <body>
     <div class="signup-container">
-    <div class="logo">
-            <img src="../Photo/Black and Orange Simple Book Store Logo.png" alt="Logo">
+    <div class="logo">   
         </div>
 
         <h2>Sign Up</h2>
@@ -209,7 +208,7 @@ $conn->close();
             <button type="submit" name="signup" class="btn-signup">Sign Up</button>
         </form>
         
-        <p>I already have an account <a href="login.php">Login</a></p>
+        <p>I already have an account <a href="login.php">Sign In</a></p>
 
 
     </div>

@@ -146,9 +146,8 @@ if (isset($_GET['error']) && $_GET['error'] != null) {
 <body>
     <div class="login-container">
         <div class="logo">
-            <img src="../Photo/Black and Orange Simple Book Store Logo.png" alt="Logo">
         </div>
-        <h2>User Login</h2>
+        <h2>Sign In</h2>
 
         <?php if (isset($error_message) && $error_message != '') { ?>
             <div class="error"><?php echo $error_message; ?></div>
